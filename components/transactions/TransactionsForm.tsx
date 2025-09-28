@@ -60,9 +60,10 @@ export default function TransactionsForm() {
     setSubmitting(true);
     setLastError(null);
     try {
-      let rk = receiptKey;
-      if (file && !rk) rk = await upload() || undefined;
-      const payload: any = { amount: n, description: description.trim(), projectId, supplierId: supplierId || undefined, date: date || undefined, receiptKey: rk };
+  let rk: string | undefined = receiptKey ?? undefined;
+  if (file && !rk) rk = (await upload()) || undefined;
+  const payload: any = { amount: n, description: description.trim(), projectId, supplierId: supplierId || undefined, date: date || undefined };
+  if (rk) payload.receiptKey = rk;
       if (!userId) {
         // dev fallback if cookie not set yet
         payload.userId = prompt('أدخل معرف المستخدم (مؤقت)') || undefined;
