@@ -19,9 +19,22 @@ async function getAll() {
     fetch(`${base}/api/transactions`, { cache: 'no-store', headers }),
     fetch(`${base}/api/projects`, { cache: 'no-store', headers }),
   ]);
-  const tx = txRes.ok ? (await txRes.json()).transactions || [] : [];
-  const projects = projectsRes.ok ? (await projectsRes.json()).projects || [] : [];
-  return { tx, projects };
+
+  const txJson = txRes.ok ? await txRes.json() : null;
+  const tx = txJson?.data?.transactions || txJson?.transactions || [];
+
+  const projectsJson = projectsRes.ok ? await projectsRes.json() : null;
+  const projects = projectsJson?.data?.projects || projectsJson?.projects || [];
+  const receipts = tx.filter((t: any) => t.receiptUrl || t.receipt_url);
+  console.log('[ReceiptsPage] fetched transactions:', tx.length, 'receipts with files:', receipts.length);
+  if (receipts.length) {
+    console.log('[ReceiptsPage] first receipt sample:', {
+      id: receipts[0]?.id,
+      receiptUrl: receipts[0]?.receiptUrl || receipts[0]?.receipt_url,
+      createdAt: receipts[0]?.created_at || receipts[0]?.createdAt
+    });
+  }
+  return { tx: receipts, projects };
 }
 
 export const metadata = { title: 'المعاملات و الإيصالات' };

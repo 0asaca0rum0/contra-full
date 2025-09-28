@@ -124,6 +124,18 @@ export default async function Page({ params }: { params: any }) {
 		attendance,
 		pmAllocData,
 	} = data;
+	const expenseList: Array<{ receiptUrl?: string | null }> = Array.isArray(expenses)
+		? expenses
+		: [];
+	const receiptUrls = expenseList
+		.map((exp) => exp.receiptUrl ?? null)
+		.filter((value): value is string => typeof value === 'string' && value.length > 0)
+		.slice(0, 10);
+	console.log('[ProjectPage] expenses receipts', {
+		projectId,
+		count: expenseList.length,
+		receipts: receiptUrls,
+	});
 	const pmUsers: Array<{ id: string; username: string; role: string }> =
 		pmUsersAll || [];
 	const pmIds = new Set<string>(
@@ -135,7 +147,7 @@ export default async function Page({ params }: { params: any }) {
 	const budgetSheet = [{ totalBudget: budget.totalBudget, spent: budget.spent, remaining: budget.remaining }];
 	const allocationsSheet = (pmAllocData.allocations || []).map((a: any)=>({ userId: a.userId, budget: a.budget }));
 	const allocHistorySheet = (pmAllocData.history || []).map((h: any)=>({ userId: h.userId, oldBudget: h.oldBudget, newBudget: h.newBudget, delta: (h.delta ?? ((h.oldBudget==null)?h.newBudget:(h.newBudget - h.oldBudget))), changedAt: h.changedAt }));
-	const expensesSheet = (expenses || []).map((e: any)=>({ id: e.id, amount: e.amount, description: e.description, createdAt: e.createdAt || e.created_at }));
+	const expensesSheet = (expenses || []).map((e: any)=>({ id: e.id, amount: e.amount, description: e.description, createdAt: e.createdAt || e.created_at, receiptUrl: e.receiptUrl || null }));
 	const attendanceSheet = (attendance || []).map((a: any)=>({ employeeId: a.employee_id || a.employeeId, status: a.status || a.state || (a.present ? 'حاضر':'غائب'), date: a.date }));
 	const managersSheet = (pmList || []).map((m: any)=>({ userId: m.id, username: m.username, role: m.role }));
 	return (
@@ -357,23 +369,40 @@ export default async function Page({ params }: { params: any }) {
 				<ProjectExpenseForm projectId={projectId} pmUsers={pmList} />
 				<div className="mt-4">
 					<h3 className="font-medium mb-2 text-sm">آخر المصروفات</h3>
-					<ul className="text-sm space-y-1">
+								<ul className="text-sm space-y-2">
 						{expenses.length === 0 && (
 							<li className="text-[var(--color-text-secondary)]">
 								لا توجد مصروفات
 							</li>
 						)}
-						{expenses.map((x: any) => (
-							<li key={x.id} className="flex items-center justify-between">
-								<span className="text-[var(--color-text-secondary)]">
-									{new Date(
-										x.createdAt ?? x.created_at ?? Date.now()
-									).toLocaleString("ar")}
-								</span>
-								<span className="font-medium">{x.amount}</span>
-								<span>{x.description}</span>
-							</li>
-						))}
+									{expenses.map((x: any) => {
+										const receiptLink = typeof x.receiptUrl === 'string' && x.receiptUrl.length > 0 ? x.receiptUrl : null;
+										return (
+											<li key={x.id} className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 rounded-md border border-[var(--glass-border)]/60 px-3 py-2 bg-[var(--glass-bg)]/60">
+												<div className="flex flex-col sm:flex-row sm:items-center sm:gap-3 text-[var(--color-text-secondary)] text-xs sm:text-sm">
+													<span>
+														{new Date(
+															x.createdAt ?? x.created_at ?? Date.now()
+														).toLocaleString("ar")}
+													</span>
+													<span className="font-medium text-[var(--color-text-primary)]">{x.amount}</span>
+													<span className="text-[var(--color-text-primary)]">{x.description}</span>
+												</div>
+												{receiptLink ? (
+													<a
+														href={receiptLink}
+														target="_blank"
+														rel="noopener noreferrer"
+														className="text-xs sm:text-sm font-semibold text-emerald-600 underline-offset-4 hover:underline"
+													>
+														عرض الإيصال
+													</a>
+												) : (
+													<span className="text-xs text-[var(--color-text-secondary)]">لا يوجد إيصال</span>
+												)}
+											</li>
+										);
+									})}
 					</ul>
 				</div>
 			</SectionCard>

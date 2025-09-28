@@ -19,6 +19,7 @@ export default function SupplierManager() {
   const [newName, setNewName] = useState('');
   const [newBalance, setNewBalance] = useState('0');
   const [editing, setEditing] = useState<Record<string, { name: string; balance: string }>>({});
+  const numberFormatter = React.useMemo(() => new Intl.NumberFormat('en-US'), []);
 
   async function load() {
     setLoading(true); setError(null);
@@ -34,7 +35,7 @@ export default function SupplierManager() {
   async function createSupplier() {
     if (!newName.trim()) return;
     try {
-      const payload = { name: newName.trim(), balance: Number(newBalance) || 0 };
+  const payload = { name: newName.trim(), balance: Number(newBalance) || 0 };
       const data = await api('POST', '/api/suppliers', payload);
       setSuppliers(s => [data.supplier, ...s]);
       setNewName(''); setNewBalance('0'); setCreating(false);
@@ -50,7 +51,7 @@ export default function SupplierManager() {
   async function saveEdit(id: string) {
     const draft = editing[id]; if (!draft) return;
     try {
-      const payload = { name: draft.name.trim(), balance: Number(draft.balance) };
+  const payload = { name: draft.name.trim(), balance: Number(draft.balance) };
       const data = await api('PUT', `/api/suppliers/${id}`, payload);
       setSuppliers(s => s.map(x => x.id === id ? data.supplier : x));
       cancelEdit(id);
@@ -118,7 +119,7 @@ export default function SupplierManager() {
                     {ed ? (
                       <input value={ed.balance} onChange={e => setEditing(o => ({ ...o, [s.id]: { ...o[s.id], balance: e.target.value } }))} className="px-2 py-1 text-xs rounded border border-slate-300 w-full" />
                     ) : (
-                      <span className={`font-mono text-[13px] ${s.balance >= 0 ? 'text-slate-600' : 'text-rose-600'}`}>{s.balance}</span>
+                      <span className={`font-mono text-[13px] ${s.balance >= 0 ? 'text-slate-600' : 'text-rose-600'}`}>{numberFormatter.format(s.balance)}</span>
                     )}
                   </td>
                   <td className="p-2 align-middle w-[160px]">

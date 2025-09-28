@@ -20,6 +20,19 @@ export default function SuppliersDirectory({ suppliers }: Props) {
   const [view, setView] = useState<'cards'|'list'>('cards');
   const [showZero, setShowZero] = useState(true);
 
+  const numberFormatter = useMemo(() => new Intl.NumberFormat('en-US'), []);
+  const dateFormatter = useMemo(
+    () =>
+      new Intl.DateTimeFormat('en-GB', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+      }),
+    []
+  );
+
+  const formatNumber = (value: number) => numberFormatter.format(value ?? 0);
+
   const filtered = useMemo(() => {
     return suppliers.filter(s => {
       if (!showZero && s.transactionsCount === 0) return false;
@@ -56,7 +69,7 @@ export default function SuppliersDirectory({ suppliers }: Props) {
       {view === 'cards' && filtered.length > 0 && (
         <div className={`grid gap-7 ${filtered.length>1 ? 'sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4':'grid-cols-1'}`}>
           {filtered.map(s => {
-            const last = s.lastTransaction ? new Date(s.lastTransaction).toLocaleDateString('ar') : '-';
+            const last = s.lastTransaction ? dateFormatter.format(new Date(s.lastTransaction)) : '-';
             const status = s.balance === 0 ? 'متزن' : (s.balance > 0 ? 'ندين' : 'دائن لنا');
             return (
               <Link key={s.id} href={`/suppliers/${s.id}`} className="group relative flex flex-col gap-5 rounded-2xl border border-slate-200 bg-gradient-to-br from-white to-slate-50 px-7 pt-6 pb-7 hover:shadow-xl shadow transition-all overflow-hidden focus:outline-none focus:ring-2 focus:ring-emerald-500/50">
@@ -66,15 +79,15 @@ export default function SuppliersDirectory({ suppliers }: Props) {
                     <h2 className="text-lg font-bold text-slate-800 tracking-tight leading-snug break-words group-hover:text-emerald-600 transition-colors">{s.name}</h2>
                     <div className="flex flex-wrap gap-2 text-[10px]">
                       <span className={`px-2 py-1 rounded-full font-semibold ${s.balance>0?'bg-amber-100 text-amber-700':s.balance<0?'bg-rose-100 text-rose-600':'bg-slate-200 text-slate-600'}`}>{status}</span>
-                      <span className="px-2 py-1 rounded-full bg-slate-100 text-slate-600 font-mono">{s.transactionsCount} عمليات</span>
-                      {s.spent>0 && <span className="px-2 py-1 rounded-full bg-emerald-100 text-emerald-700 font-mono">مدفوع {s.spent}</span>}
+                      <span className="px-2 py-1 rounded-full bg-slate-100 text-slate-600 font-mono">{formatNumber(s.transactionsCount)} عمليات</span>
+                      {s.spent>0 && <span className="px-2 py-1 rounded-full bg-emerald-100 text-emerald-700 font-mono">مدفوع {formatNumber(s.spent)}</span>}
                     </div>
                   </div>
                 </div>
-                <div className="grid grid-cols-4 gap-3 text-center">
-                  <Metric label="الرصيد" value={s.balance} tone={s.balance<0? 'rose':'slate'} />
-                  <Metric label="المدفوع" value={s.spent} tone="emerald" />
-                  <Metric label="العمليات" value={s.transactionsCount} />
+                <div className="grid grid-cols-2 grid-rows-2 gap-1 text-center">
+                  <Metric label="الرصيد" value={formatNumber(s.balance)} tone={s.balance<0? 'rose':'slate'} />
+                  <Metric label="المدفوع" value={formatNumber(s.spent)} tone="emerald" />
+                  <Metric label="العمليات" value={formatNumber(s.transactionsCount)} />
                   <Metric label="آخر" value={last} small />
                 </div>
                 <div className="absolute inset-0 rounded-2xl ring-1 ring-transparent group-hover:ring-emerald-400/50 transition-colors" />
@@ -99,14 +112,14 @@ export default function SuppliersDirectory({ suppliers }: Props) {
             </thead>
             <tbody>
               {filtered.map(s => {
-                const last = s.lastTransaction ? new Date(s.lastTransaction).toLocaleDateString('ar') : '-';
+                const last = s.lastTransaction ? dateFormatter.format(new Date(s.lastTransaction)) : '-';
                 const status = s.balance === 0 ? 'متزن' : (s.balance > 0 ? 'ندين' : 'دائن لنا');
                 return (
                   <tr key={s.id} className="border-t border-slate-100 hover:bg-slate-50 transition-colors">
                     <td className="p-2 font-medium text-slate-700"><Link href={`/suppliers/${s.id}`} className="hover:underline">{s.name}</Link></td>
-                    <td className={`p-2 font-mono text-[13px] ${s.balance<0? 'text-rose-600':'text-slate-600'}`}>{s.balance}</td>
-                    <td className="p-2 font-mono text-[13px] text-emerald-700">{s.spent}</td>
-                    <td className="p-2 font-mono text-[12px] text-slate-600">{s.transactionsCount}</td>
+                    <td className={`p-2 font-mono text-[13px] ${s.balance<0? 'text-rose-600':'text-slate-600'}`}>{formatNumber(s.balance)}</td>
+                    <td className="p-2 font-mono text-[13px] text-emerald-700">{formatNumber(s.spent)}</td>
+                    <td className="p-2 font-mono text-[12px] text-slate-600">{formatNumber(s.transactionsCount)}</td>
                     <td className="p-2 text-[11px] text-slate-500">{last}</td>
                     <td className="p-2 text-[11px]">
                       <span className={`px-2 py-1 rounded-full text-[10px] font-semibold ${s.balance>0?'bg-amber-100 text-amber-700':s.balance<0?'bg-rose-100 text-rose-600':'bg-slate-200 text-slate-600'}`}>{status}</span>
@@ -127,8 +140,8 @@ function Metric({ label, value, tone='slate', small=false }: { label: string; va
     slate: 'text-slate-700', emerald: 'text-emerald-600', rose: 'text-rose-600'
   };
   return (
-    <div className="flex flex-col items-center justify-center rounded-xl border border-slate-200 bg-white/70 h-20">
-      <span className="text-[10px] text-slate-500 mb-1">{label}</span>
+    <div className="flex flex-col items-center justify-center rounded-xl border border-slate-200 bg-white/70 h-20 ">
+      <span className="text-[10px] text-slate-500 mb-2">{label}</span>
       <span className={`font-semibold ${small? 'text-xs':'text-lg'} tracking-tight ${colorMap[tone]}`}>{value}</span>
     </div>
   );

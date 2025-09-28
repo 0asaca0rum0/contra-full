@@ -60,6 +60,12 @@ export default function ProjectExpenseForm({ projectId, pmUsers }: { projectId: 
       } else if (receiptKey) {
         rk = receiptKey;
       }
+      console.log('[ProjectExpenseForm] submitting expense', {
+        projectId,
+        hasFile: Boolean(file),
+        providedReceiptKey: Boolean(receiptKey),
+        finalReceiptKey: rk ?? null,
+      });
       const res = await fetch(`/api/projects/${projectId}/expenses`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
