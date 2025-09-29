@@ -36,6 +36,9 @@ export default async function PMDirectoryPage() {
           <Link href="/projects" className="text-sm px-3 py-1.5 rounded-md border border-slate-200 hover:bg-slate-50 text-slate-600 transition-colors">المشاريع</Link>
         </div>
       </div>
+      <p className="rounded-2xl border border-emerald-100 bg-emerald-50/70 px-4 py-3 text-sm text-emerald-900">
+        لإضافة مدير مشروع جديد تفضّل بالعودة إلى اللوحة الرئيسية واستخدام قسم إدارة المستخدمين لإضافة مستخدم بدور <span className="font-semibold">PM</span>.
+      </p>
 
       <SectionCard>
         <div className={`grid gap-8 ${(pms.length > 1) ? 'sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4' : 'grid-cols-1'}`}>

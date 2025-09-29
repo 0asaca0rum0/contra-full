@@ -14,6 +14,8 @@ export default function TransactionsForm() {
   const [loadingProjects, setLoadingProjects] = useState(false);
   const [suppliers, setSuppliers] = useState<Array<{ id: string; name: string }>>([]);
   const [loadingSuppliers, setLoadingSuppliers] = useState(false);
+  const [descriptions, setDescriptions] = useState<string[]>([]);
+  const [loadingDescriptions, setLoadingDescriptions] = useState(false);
   const [date, setDate] = useState<string>('');
   const [supplierId, setSupplierId] = useState('');
   const [file, setFile] = useState<File | null>(null);
@@ -117,6 +119,25 @@ export default function TransactionsForm() {
       } finally {
         setLoadingSuppliers(false);
       }
+      try {
+        setLoadingDescriptions(true);
+        const resTx = await fetch('/api/transactions?limit=200', { cache: 'no-store' });
+        if (resTx.ok) {
+          const data = await resTx.json();
+          const raw = (Array.isArray(data?.data?.transactions) ? data.data.transactions : undefined)
+            ?? (Array.isArray(data?.transactions) ? data.transactions : []);
+          const options = Array.from(
+            new Set(
+              (raw as Array<{ description?: string | null }>).
+                map((t) => (t.description ?? '').trim()).
+                filter((value) => value.length > 0)
+            )
+          ).slice(0, 30);
+          setDescriptions(options);
+        }
+      } finally {
+        setLoadingDescriptions(false);
+      }
     })();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -140,7 +161,20 @@ export default function TransactionsForm() {
         </div>
         <div className="md:col-span-2">
           <label className="text-xs mb-1 block">الوصف</label>
-          <input value={description} onChange={e=>setDescription(e.target.value)} className="w-full border rounded px-2 py-1 text-sm" placeholder="مثال: شراء معدات" />
+          <input
+            value={description}
+            onChange={e=>setDescription(e.target.value)}
+            className="w-full border rounded px-2 py-1 text-sm"
+            placeholder={loadingDescriptions ? 'جارٍ التحميل…' : 'مثال: شراء معدات'}
+            list="transaction-description-options"
+          />
+          {descriptions.length > 0 && (
+            <datalist id="transaction-description-options">
+              {descriptions.map((value) => (
+                <option key={value} value={value} />
+              ))}
+            </datalist>
+          )}
         </div>
         <div>
           <label className="text-xs mb-1 block">المشروع</label>

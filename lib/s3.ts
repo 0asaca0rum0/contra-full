@@ -11,17 +11,30 @@ function ensureDir(p: string) {
   if (!fs.existsSync(p)) fs.mkdirSync(p, { recursive: true });
 }
 
-export function planLocalReceipt(ext: string) : LocalUploadPlan {
+function sanitizeExt(ext: string) {
+  return ext.toLowerCase().replace(/[^a-z0-9]/g, '') || 'bin';
+}
+
+function planLocalAsset(folder: string, ext: string): LocalUploadPlan {
   const now = new Date();
   const yyyy = now.getUTCFullYear();
   const mm = String(now.getUTCMonth() + 1).padStart(2,'0');
   const id = crypto.randomUUID();
-  const safeExt = ext.toLowerCase().replace(/[^a-z0-9]/g,'') || 'bin';
-  const rel = path.posix.join('receipts', String(yyyy), String(mm));
+  const safeExt = sanitizeExt(ext);
+  const rel = path.posix.join(folder, String(yyyy), String(mm));
   const dir = path.join(baseDir, rel);
   ensureDir(dir);
   const filename = id + '.' + safeExt;
-  return { key: path.posix.join(rel, filename), uploadUrl: `/api/files/upload?key=${encodeURIComponent(path.posix.join(rel, filename))}`, formField: 'file' };
+  const key = path.posix.join(rel, filename);
+  return { key, uploadUrl: `/api/files/upload?key=${encodeURIComponent(key)}`, formField: 'file' };
+}
+
+export function planLocalReceipt(ext: string) : LocalUploadPlan {
+  return planLocalAsset('receipts', ext);
+}
+
+export function planWarehouseImage(ext: string): LocalUploadPlan {
+  return planLocalAsset('warehouse', ext);
 }
 
 export function localFileAbsolute(key: string) {

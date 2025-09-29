@@ -28,31 +28,68 @@ export default async function WarehousePage() {
         <AddWarehouseItemForm />
       </SectionCard>
       <SectionCard>
-        <h2 className="font-semibold mb-4 text-base text-slate-700">الأصناف</h2>
-        <div className="overflow-auto">
-          <table className="w-full text-sm border-separate border-spacing-y-2">
-            <thead className="text-[11px] text-slate-500">
-              <tr className="text-right">
-                <th className="font-medium">الاسم</th>
-                <th className="font-medium">الكمية</th>
-                <th className="font-medium">صورة</th>
-                <th className="font-medium">تعديل المخزون</th>
-              </tr>
-            </thead>
-            <tbody>
-              {items.length === 0 && <tr><td colSpan={4} className="py-10 text-center text-slate-400">لا توجد أصناف</td></tr>}
-              {items.map(i => (
-                <tr key={i.id} className="bg-slate-50 hover:bg-slate-100 transition-colors">
-                  <td className="px-2 py-2 font-medium text-slate-700">{i.name}</td>
-                  <td className="px-2 py-2 font-mono text-[13px] text-emerald-700">{i.quantity}</td>
-                  <td className="px-2 py-2 text-center">{i.imageUrl ? <a href={i.imageUrl} target="_blank" className="text-emerald-600 hover:underline text-[12px]">عرض</a> : <span className="text-slate-400 text-[11px]">—</span>}</td>
-                  <td className="px-2 py-2"><AdjustStockControls itemId={i.id} /></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <h2 className="mb-4 text-base font-semibold text-slate-700">الأصناف</h2>
+        {items.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50/70 px-6 py-16 text-center text-sm text-slate-500">
+            لا توجد أصناف في المخزن حالياً.
+          </div>
+        ) : (
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {items.map((item) => (
+              <article
+                key={item.id}
+                className="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-1 hover:border-emerald-200 hover:shadow-md"
+              >
+                <div className="flex items-center gap-3">
+                  <WarehouseImage imageUrl={item.imageUrl} name={item.name} />
+                  <div className="space-y-1">
+                    <h3 className="text-sm font-semibold text-slate-800" title={item.name}>
+                      {item.name}
+                    </h3>
+                    <p className="text-[11px] text-slate-500">
+                      الكمية الحالية: <span className="font-mono text-emerald-700">{item.quantity}</span>
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-auto">
+                  <AdjustStockControls itemId={item.id} />
+                </div>
+                {item.imageUrl && (
+                  <a
+                    href={item.imageUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-[11px] font-semibold text-emerald-600 hover:text-emerald-700"
+                  >
+                    فتح الصورة بالحجم الكامل →
+                  </a>
+                )}
+              </article>
+            ))}
+          </div>
+        )}
       </SectionCard>
+    </div>
+  );
+}
+
+function WarehouseImage({ imageUrl, name }: { imageUrl: string | null | undefined; name: string }) {
+  if (!imageUrl) {
+    return (
+      <div className="flex h-16 w-16 items-center justify-center rounded-xl border border-dashed border-slate-200 bg-slate-50 text-[10px] text-slate-400">
+        بدون صورة
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative h-16 w-16 overflow-hidden rounded-xl border border-slate-200">
+      <img
+        src={imageUrl}
+        alt={name}
+        className="h-full w-full object-cover"
+        loading="lazy"
+      />
     </div>
   );
 }

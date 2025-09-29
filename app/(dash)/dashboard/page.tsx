@@ -117,6 +117,43 @@ export default async function Page() {
         </SectionCard>
       </div>
 
+      <div id="users-admin">
+        {canManageUsers ? (
+          <SectionCard className="space-y-6 border border-emerald-100/80 bg-white/95">
+            <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="space-y-1">
+                <h2 className="text-base font-semibold text-emerald-900">إدارة المستخدمين</h2>
+                <p className="text-sm leading-6 text-emerald-800/80">
+                  أضف مستخدمين جدد، حدّث الأدوار، أو فعّل الصلاحيات الإضافية لفريقك من خلال الجدول التفاعلي أدناه.
+                </p>
+              </div>
+              <Link
+                href="/permissions"
+                className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-500/10 px-4 py-2 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-500/20 hover:text-emerald-800"
+              >
+                إدارة الصلاحيات
+              </Link>
+            </header>
+            <div className="flex flex-wrap gap-2 text-[11px] font-medium text-emerald-700">
+              <span className="rounded-full bg-emerald-100/80 px-3 py-1">إجمالي: {users.length}</span>
+              <span className="rounded-full bg-emerald-100/60 px-3 py-1">إداريون: {grouped.ADMIN.length}</span>
+              <span className="rounded-full bg-emerald-100/60 px-3 py-1">مشرفون: {grouped.MOD.length}</span>
+              <span className="rounded-full bg-emerald-100/60 px-3 py-1">مديرو مشاريع: {grouped.PM.length}</span>
+            </div>
+            <UsersManager />
+          </SectionCard>
+        ) : (
+          <SectionCard className="border border-emerald-100/70 bg-emerald-50/70">
+            <div className="space-y-3 text-sm text-emerald-900">
+              <h2 className="text-base font-semibold text-emerald-900">إدارة المستخدمين</h2>
+              <p>
+                تحتاج إلى صلاحيات إضافية لعرض وإدارة المستخدمين. تواصل مع أحد الإداريين للحصول على وصول إلى هذا القسم.
+              </p>
+            </div>
+          </SectionCard>
+        )}
+      </div>
+
       {/* Latest transactions & low stock */}
       <div className="grid gap-6 xl:grid-cols-3">
         <SectionCard className="xl:col-span-2">
@@ -198,15 +235,6 @@ export default async function Page() {
           </ul>
         </SectionCard>
       </div>
-
-      {canManageUsers && (
-        <div id="users-admin" className="scroll-mt-24">
-          <SectionCard>
-            <h2 className="font-semibold mb-4 text-base text-slate-700">إدارة المستخدمين</h2>
-            <UsersManager />
-          </SectionCard>
-        </div>
-      )}
     </div>
   );
 }

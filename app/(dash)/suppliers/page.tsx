@@ -1,11 +1,11 @@
+import type { ReactNode } from 'react';
 import { getBaseUrl } from '@/lib/baseUrl';
 import SectionCard from '@/components/ui/SectionCard';
 import Link from 'next/link';
 import { cookies } from 'next/headers';
 import { FaTruckMoving, FaMoneyBillTrendUp } from 'react-icons/fa6';
 import AccountingExportButton from '@/components/accounting/AccountingExportButton';
-import SupplierManager from '@/components/suppliers/SupplierManager';
-import SuppliersDirectory from '@/components/suppliers/SuppliersDirectory';
+import SuppliersWorkspace from '@/components/suppliers/SuppliersWorkspace';
 
 export const metadata = { title: 'الموردون' };
 export const dynamic = 'force-dynamic';
@@ -48,6 +48,17 @@ export default async function SuppliersDirectoryPage() {
     },
     { balance: 0, spent: 0, transactions: 0 }
   );
+  const metricCards = [
+    { title: 'عدد الموردين', value: suppliers.length },
+    {
+      title: 'إجمالي الأرصدة',
+      value: totals.balance,
+      subtitle: 'الرصيد الحالي الفعّال',
+      icon: <FaMoneyBillTrendUp className="text-emerald-500" />,
+    },
+    { title: 'إجمالي المصروف', value: totals.spent, subtitle: 'منذ بداية التعامل' },
+    { title: 'عدد المعاملات', value: totals.transactions, subtitle: 'آخر 12 شهرًا' },
+  ];
   return (
     <div className="mx-auto max-w-6xl space-y-12 px-4 pb-16 pt-8 sm:px-6 lg:px-8">
       <section className="rounded-3xl border border-emerald-100/70 bg-gradient-to-br from-emerald-50 via-white to-white/90 px-8 py-10 shadow-lg ring-1 ring-emerald-100/50">
@@ -79,50 +90,34 @@ export default async function SuppliersDirectoryPage() {
           </div>
         </div>
         <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          <MetricCard title="عدد الموردين" value={suppliers.length} formatter={formatter} />
-          <MetricCard
-            title="إجمالي الأرصدة"
-            value={totals.balance}
-            formatter={formatter}
-            icon={<FaMoneyBillTrendUp className="text-emerald-500" />}
-            subtitle="الرصيد الحالي الفعّال"
-          />
-          <MetricCard title="إجمالي المصروف" value={totals.spent} formatter={formatter} subtitle="منذ بداية التعامل" />
-          <MetricCard title="عدد المعاملات" value={totals.transactions} formatter={formatter} subtitle="آخر 12 شهرًا" />
+          {metricCards.map((metric) => (
+            <MetricCard key={metric.title} formatter={formatter} {...metric} />
+          ))}
         </div>
       </section>
 
-      <SectionCard className="space-y-10 border border-slate-100/80 bg-white/95">
-        <header className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 pb-5">
-          <div className="space-y-2">
-            <h2 className="text-lg font-semibold text-slate-800">إدارة الموردين</h2>
-            <p className="text-sm leading-6 text-slate-500">أضف موردين جدد، عدّل أرصدة الموردين النشطين، أو قم بتصفية السجلات الحالية.</p>
-          </div>
+      <SectionCard className="space-y-8 border border-slate-100/80 bg-white/95">
+        <header className="space-y-2 border-b border-slate-100 pb-5">
+          <h2 className="text-lg font-semibold text-slate-800">سير العمل الموحد</h2>
+          <p className="text-sm leading-6 text-slate-500">
+            تنقل بين نظرة عامة تفاعلية على الموردين وإدارة بياناتهم المالية من خلال الواجهة نفسها دون تكرار للمحتوى.
+          </p>
         </header>
-        <div className="rounded-3xl border border-slate-100 bg-slate-50/80 p-6 shadow-inner">
-          <SupplierManager />
-        </div>
-        <div className="rounded-3xl border border-slate-100 bg-white/95 p-6 shadow-sm">
-          <SuppliersDirectory suppliers={suppliers} />
-        </div>
+        <SuppliersWorkspace suppliers={suppliers} />
       </SectionCard>
     </div>
   );
 }
 
-function MetricCard({
-  title,
-  value,
-  subtitle,
-  icon,
-  formatter,
-}: {
+type MetricCardProps = {
   title: string;
   value: number;
   subtitle?: string;
-  icon?: React.ReactNode;
+  icon?: ReactNode;
   formatter: Intl.NumberFormat;
-}) {
+};
+
+function MetricCard({ title, value, subtitle, icon, formatter }: MetricCardProps) {
   return (
     <div className="group relative overflow-hidden rounded-3xl border border-emerald-100/60 bg-white/80 p-5 shadow-sm transition-all hover:-translate-y-1 hover:border-emerald-200 hover:shadow-lg">
       <div className="absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-emerald-200 to-transparent" />
