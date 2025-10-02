@@ -3,11 +3,15 @@ import { apiSuccess, apiError, logger } from '@/lib/api';
 import { loadAuthContext, hasRequired } from '@/lib/authz';
 import { loadPmProjectDetail } from '@/lib/pm-project-detail';
 
-export async function GET(req: NextRequest, ctx: { params: Promise<{ userId: string; projectId: string }> }) {
+export async function GET(req: NextRequest, ctx: { params: Promise<{ projectId: string }> }) {
   const auth = await loadAuthContext();
   if (!auth.userId) return apiError(req, 'unauthorized', 'غير مصرح', 401);
 
-  const { userId, projectId } = await ctx.params;
+  const { projectId } = await ctx.params;
+  const url = new URL(req.url);
+  const queryUserId = url.searchParams.get('userId') || url.searchParams.get('pmId') || auth.userId;
+  const userId = queryUserId.trim();
+
   const isSelf = auth.userId === userId;
   const canAdmin = hasRequired(auth.permissions, { anyOf: ['ALL', 'PROJECTS_READ'] });
   if (!isSelf && !canAdmin) {
@@ -34,7 +38,10 @@ export async function GET(req: NextRequest, ctx: { params: Promise<{ userId: str
       receipts: detail.receipts,
     });
   } catch (error) {
-    logger.error({ error: error instanceof Error ? error.message : String(error), projectId, userId }, 'pm_project_detail_failed');
+    logger.error(
+      { error: error instanceof Error ? error.message : String(error), projectId, userId },
+      'pm_project_detail_legacy_failed'
+    );
     return apiError(req, 'server_error', 'حدث خطأ غير متوقع', 500);
   }
 }

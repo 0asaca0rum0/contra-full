@@ -94,6 +94,8 @@ The tables below list primary endpoints, expected permissions, and notable behav
 |---------------|---------|-------|
 | `GET /api/pm/overview` | Portfolio-wide view of PM allocations vs spending (includes admins). |
 | `GET /api/pm/projects?userId=` | Projects assigned to specific PM (includes current budget). |
+| `GET /api/pm/:userId/projects/:projectId` | Full detail for a PM on a specific project (workers, allocation, transactions, receipts). |
+| `GET /api/pm/projects/:projectId?userId=` | Legacy-compatible variant resolving PM project detail using a query parameter. |
 | `GET /api/pm/:userId/overview` | Deep dive per project (budgets, spend, recent expenses, audit history). |
 | `GET /api/pm/:userId/budget-audit` | Paginated audit log of allocation adjustments. |
 | `GET /api/pm/attendance/today?userId=` | Attendance entries today for PM's projects. |
