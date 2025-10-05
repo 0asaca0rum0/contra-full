@@ -86,6 +86,7 @@ export const tools = pgTable('tools', {
   id: text('id').primaryKey().default(sql`gen_random_uuid()`),
   name: text('name').notNull(),
   location: text('location').notNull(),
+  responsiblePmId: text('responsible_pm_id').references(() => users.id),
   createdAt: timestamp('created_at', { withTimezone: false }).defaultNow().notNull(),
 });
 

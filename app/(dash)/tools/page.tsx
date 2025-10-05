@@ -1,7 +1,7 @@
 import React from 'react';
 import { db } from '@/drizzle/db';
-import { tools, projects } from '@/drizzle/schema';
-import { ilike } from 'drizzle-orm';
+import { tools, projects, projectManagers, users } from '@/drizzle/schema';
+import { ilike, eq } from 'drizzle-orm';
 import AddToolForm from '../../../components/tools/AddToolForm';
 import SectionCard from '@/components/ui/SectionCard';
 import { FaScrewdriverWrench } from 'react-icons/fa6';
@@ -23,9 +23,29 @@ export default async function ToolsPage({ searchParams }: { searchParams: Promis
   }
   const list = rows as any[];
   const projectRows = await db.select({ id: projects.id, name: projects.name }).from(projects);
-  const projectOptions = projectRows.map((p) => ({ id: p.id, name: p.name }));
+  const pmRows = await db
+    .select({ projectId: projectManagers.projectId, userId: projectManagers.userId, name: users.username })
+    .from(projectManagers)
+    .innerJoin(users, eq(projectManagers.userId, users.id));
+  const pmByProject = new Map<string, { id: string; name: string }[]>();
+  pmRows.forEach((pm) => {
+    const listForProject = pmByProject.get(pm.projectId) ?? [];
+    listForProject.push({ id: pm.userId, name: pm.name });
+    pmByProject.set(pm.projectId, listForProject);
+  });
+  const projectOptions = projectRows.map((p) => ({
+    id: p.id,
+    name: p.name,
+    managers: pmByProject.get(p.id) ?? [],
+  }));
   const projectMap = new Map(projectOptions.map((p) => [p.id, p.name]));
-  const toolsExport = list.map(t=>({ id: t.id, name: t.name, location: projectMap.get(t.location) ?? t.location }));
+  const pmMap = new Map(pmRows.map((pm) => [pm.userId, pm.name]));
+  const toolsExport = list.map(t=>({
+    id: t.id,
+    name: t.name,
+    location: projectMap.get(t.location) ?? t.location,
+    responsiblePm: t.responsiblePmId ? (pmMap.get(t.responsiblePmId) ?? t.responsiblePmId) : '—',
+  }));
   const summary = [{ count: toolsExport.length }];
   return (
     <div className="space-y-10">
@@ -61,6 +81,8 @@ export default async function ToolsPage({ searchParams }: { searchParams: Promis
                 nameInitial={t.name}
                 locationInitial={t.location}
                 locationLabel={projectMap.get(t.location) ?? t.location ?? '—'}
+                responsiblePmIdInitial={t.responsiblePmId ?? ''}
+                responsiblePmName={t.responsiblePmId ? (pmMap.get(t.responsiblePmId) ?? '') : ''}
                 projectOptions={projectOptions}
               />
               <div className="absolute inset-0 rounded-2xl ring-1 ring-transparent group-hover:ring-emerald-400/40 transition-colors pointer-events-none" />

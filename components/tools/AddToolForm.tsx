@@ -1,16 +1,28 @@
 "use client";
-import React, { useState, useTransition } from 'react';
+import React, { useMemo, useState, useTransition } from 'react';
 
 interface ProjectOption {
   id: string;
   name: string;
+  managers: { id: string; name: string }[];
 }
 
 export default function AddToolForm({ projects }: { projects: ProjectOption[] }) {
   const [name, setName] = useState('');
   const [projectId, setProjectId] = useState('');
+  const [pmId, setPmId] = useState('');
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
+
+  const projectManagers = useMemo(() => {
+    return projects.find((p) => p.id === projectId)?.managers ?? [];
+  }, [projects, projectId]);
+
+  React.useEffect(() => {
+    if (!projectManagers.some((pm) => pm.id === pmId)) {
+      setPmId('');
+    }
+  }, [projectManagers, pmId]);
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,7 +31,15 @@ export default function AddToolForm({ projects }: { projects: ProjectOption[] })
       setError('يجب اختيار مشروع');
       return;
     }
-    const payload = { name, location: projectId };
+    if (projectManagers.length === 0) {
+      setError('لا يوجد مدير مشروع مرتبط بهذا المشروع');
+      return;
+    }
+    if (!pmId) {
+      setError('يجب اختيار مدير المشروع المسؤول');
+      return;
+    }
+    const payload = { name, location: projectId, responsiblePmId: pmId };
     startTransition(async () => {
       const res = await fetch('/api/tools', { method: 'POST', body: JSON.stringify(payload), headers: { 'content-type': 'application/json' } });
       if (!res.ok) {
@@ -29,6 +49,7 @@ export default function AddToolForm({ projects }: { projects: ProjectOption[] })
       }
       setName('');
       setProjectId('');
+      setPmId('');
       window.location.reload();
     });
   };
@@ -42,7 +63,7 @@ export default function AddToolForm({ projects }: { projects: ProjectOption[] })
   }
 
   return (
-    <form onSubmit={submit} className="flex gap-2 items-end py-2">
+    <form onSubmit={submit} className="flex gap-2 flex-wrap items-end py-2">
       <div className="flex flex-col">
         <label className="text-xs tracking-wide text-gray-500">اسم الأداة</label>
         <input value={name} onChange={e=>setName(e.target.value)} required className="border rounded px-2 py-1 text-sm" placeholder="مثال: مثقاب" />
@@ -58,6 +79,21 @@ export default function AddToolForm({ projects }: { projects: ProjectOption[] })
           <option value="">اختر مشروعاً</option>
           {projects.map(project => (
             <option key={project.id} value={project.id}>{project.name}</option>
+          ))}
+        </select>
+      </div>
+      <div className="flex flex-col">
+        <label className="text-xs tracking-wide text-gray-500">مدير المشروع المسؤول</label>
+        <select
+          value={pmId}
+          onChange={e=>setPmId(e.target.value)}
+          required
+          disabled={projectManagers.length === 0}
+          className="border rounded px-2 py-1 text-sm min-w-[12rem] bg-white disabled:bg-slate-100 disabled:text-slate-400"
+        >
+          <option value="">{projectManagers.length === 0 ? 'لا يوجد مدراء متاحون' : 'اختر مديراً'}</option>
+          {projectManagers.map((pm) => (
+            <option key={pm.id} value={pm.id}>{pm.name}</option>
           ))}
         </select>
       </div>

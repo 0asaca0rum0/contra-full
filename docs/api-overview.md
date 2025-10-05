@@ -131,9 +131,10 @@ The tables below list primary endpoints, expected permissions, and notable behav
 | `GET /api/warehouse/items/:itemId/history` | Fetch warehouse movement history for item. |
 | `POST /api/warehouse/items/presign` | Generate upload plan for item imagery. |
 | `POST /api/warehouse/transactions` | Record stock movement (IN/OUT), update inventory, optionally adjust supplier balance. | Validates stock availability and caps quantities.
-| `GET /api/tools` | List or search tools. |
-| `POST /api/tools` | Create tool record. |
-| `PATCH /api/tools/:toolId` | Update tool name or location with validation (Arabic messaging). |
+| `GET /api/tools` | List or search tools (includes project and responsible PM ids). |
+| `POST /api/tools` | Create tool record; requires `name`, `location` (project id), and `responsiblePmId` assigned to that project. |
+| `PATCH /api/tools/:toolId` | Update tool name, project, or responsible PM with validation (Arabic messaging). |
+| `DELETE /api/tools/:toolId` | Delete tool record. |
 
 ### 2.8 Attendance & Employees
 
@@ -177,7 +178,7 @@ Schema definitions live in `drizzle/schema.ts`. Key tables include:
 - `suppliers`: supplier master data and running balance.
 - `transactions`: financial transactions (expenses) with optional supplier and receipt.
 - `warehouse_items`, `warehouse_transactions`: inventory plus movement log.
-- `tools`: lightweight asset tracking for tools/equipment.
+- `tools`: lightweight asset tracking for tools/equipment (project location + responsible PM).
 
 ## 4. Cross-Cutting Concerns
 
