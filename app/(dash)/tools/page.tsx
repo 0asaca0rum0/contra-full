@@ -1,6 +1,6 @@
 import React from 'react';
 import { db } from '@/drizzle/db';
-import { tools } from '@/drizzle/schema';
+import { tools, projects } from '@/drizzle/schema';
 import { ilike } from 'drizzle-orm';
 import AddToolForm from '../../../components/tools/AddToolForm';
 import SectionCard from '@/components/ui/SectionCard';
@@ -22,7 +22,10 @@ export default async function ToolsPage({ searchParams }: { searchParams: Promis
     rows = await db.select().from(tools);
   }
   const list = rows as any[];
-  const toolsExport = list.map(t=>({ id: t.id, name: t.name, location: t.location }));
+  const projectRows = await db.select({ id: projects.id, name: projects.name }).from(projects);
+  const projectOptions = projectRows.map((p) => ({ id: p.id, name: p.name }));
+  const projectMap = new Map(projectOptions.map((p) => [p.id, p.name]));
+  const toolsExport = list.map(t=>({ id: t.id, name: t.name, location: projectMap.get(t.location) ?? t.location }));
   const summary = [{ count: toolsExport.length }];
   return (
     <div className="space-y-10">
@@ -48,12 +51,18 @@ export default async function ToolsPage({ searchParams }: { searchParams: Promis
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div className="text-sm text-slate-500">عدد الأدوات: <span className="font-semibold text-slate-700">{list.length}</span></div>
         </div>
-        <AddToolForm />
+        <AddToolForm projects={projectOptions} />
         <div className={`grid gap-6 ${(list.length > 1) ? 'sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4' : 'grid-cols-1'}`}>
           {list.length === 0 && <div className="text-base text-[var(--color-text-secondary)]">لا توجد أدوات حالياً</div>}
           {list.map(t => (
             <div key={t.id} className="group relative flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white px-6 pt-5 pb-6 hover:shadow-lg shadow transition-colors overflow-hidden focus:outline-none focus:ring-2 focus:ring-emerald-500/60">
-              <EditableToolFields id={t.id} nameInitial={t.name} locationInitial={t.location} />
+              <EditableToolFields
+                id={t.id}
+                nameInitial={t.name}
+                locationInitial={t.location}
+                locationLabel={projectMap.get(t.location) ?? t.location ?? '—'}
+                projectOptions={projectOptions}
+              />
               <div className="absolute inset-0 rounded-2xl ring-1 ring-transparent group-hover:ring-emerald-400/40 transition-colors pointer-events-none" />
             </div>
           ))}
