@@ -73,7 +73,7 @@ function localizeRows(rows: any[]): any[] {
   });
 }
 
-export default function AccountingExportButton({ endpoints = [], sheets = [], filename = 'تقرير_محاسبي', text = 'تصدير Excel شامل', variant = 'outline', size = 'sm', className }: Props) {
+export default function AccountingExportButton({ endpoints = [], sheets = [], filename = 'تقرير_محاسبي', text = 'تصدير Excel شامل', variant = 'outline', size = 'sm' }: Props) {
   const [busy, setBusy] = useState(false);
 
   async function fetchEndpoint(e: EndpointConfig): Promise<{ sheet: string; rows: any[] }> {
