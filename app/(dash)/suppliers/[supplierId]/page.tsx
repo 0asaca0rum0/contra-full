@@ -78,7 +78,7 @@ export default async function SupplierPage(props: any) {
               <div className="flex items-center gap-3">
                 <h1 className="text-3xl font-bold tracking-tight">{supplier.name}</h1>
                 <span className={`rounded-full px-3 py-1 text-xs font-bold ring-1 ring-inset ${supplier.balance > 0 ? 'bg-amber-500/10 text-amber-400 ring-amber-500/20' : supplier.balance < 0 ? 'bg-emerald-500/10 text-emerald-400 ring-emerald-500/20' : 'bg-slate-500/10 text-slate-400 ring-slate-500/20'}`}>
-                  {supplier.balance > 0 ? 'لنا' : supplier.balance < 0 ? 'علينا' : 'متزن'}
+                  {supplier.balance > 0 ? 'علينا' : supplier.balance < 0 ? 'لنا' : 'متزن'}
                 </span>
               </div>
               <p className="mt-2 text-slate-400 font-mono text-sm">#{supplier.id.slice(0, 8)}</p>
@@ -110,7 +110,7 @@ export default async function SupplierPage(props: any) {
           formatter={new Intl.NumberFormat('en-US')}
           icon={<FaMoneyBillTrendUp className="h-5 w-5" />}
           color={supplier.balance > 0 ? 'amber' : supplier.balance < 0 ? 'emerald' : 'slate'}
-          trend={supplier.balance > 0 ? 'لنا' : supplier.balance < 0 ? 'علينا' : 'متزن'}
+          trend={supplier.balance > 0 ? 'علينا' : supplier.balance < 0 ? 'لنا' : 'متزن'}
         />
         <MetricCard
           title="إجمالي المدفوع"
