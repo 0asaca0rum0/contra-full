@@ -105,7 +105,7 @@ export const transactions = pgTable('transactions', {
   description: text('description').notNull(),
   receiptUrl: text('receipt_url'),
   createdAt: timestamp('created_at', { withTimezone: false }).defaultNow().notNull(),
-  projectId: text('project_id').notNull().references(() => projects.id),
+  projectId: text('project_id').references(() => projects.id),
   userId: text('user_id').notNull().references(() => users.id),
   supplierId: text('supplier_id').references(() => suppliers.id),
 });

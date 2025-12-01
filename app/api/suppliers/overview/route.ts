@@ -10,7 +10,8 @@ export async function GET() {
 
     const agg = await db.execute(sql`
       SELECT supplier_id, 
-             SUM(amount)::double precision AS spent,
+             SUM(amount)::double precision AS balance,
+             SUM(CASE WHEN amount < 0 THEN ABS(amount) ELSE 0 END)::double precision AS spent,
              COUNT(*) AS tx_count,
              MAX(created_at) AS last_tx
       FROM transactions
@@ -29,7 +30,7 @@ export async function GET() {
       return {
         id: s.id,
         name: s.name,
-        balance: s.balance,
+        balance: Number(a.balance || 0),
         spent: Number(a.spent || 0),
         transactionsCount: Number(a.tx_count || 0),
         lastTransaction: a.last_tx || null,

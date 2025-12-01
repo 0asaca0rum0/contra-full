@@ -14,39 +14,29 @@ export default function SuppliersWorkspace({ suppliers }: Props) {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-100 bg-slate-50/70 px-4 py-3">
-        <div className="space-y-1">
-          <p className="text-sm font-semibold text-slate-700">
-            اختر ما إذا كنت ترغب في استعراض الموردين أو إدارة بياناتهم.
-          </p>
-          <p className="text-[12px] text-slate-500">
-            يعتمد كلا الوضعين على نفس البيانات المباشرة، لذلك لن يتم تكرار القوائم أو المستجدات.
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={() => setMode('overview')}
-            className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
-              mode === 'overview'
-                ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/30'
-                : 'bg-white text-emerald-700 border border-emerald-200 hover:border-emerald-300 hover:text-emerald-800'
-            }`}
-          >
-            نظرة عامة
-          </button>
-          <button
-            type="button"
-            onClick={() => setMode('manage')}
-            className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
-              mode === 'manage'
-                ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/30'
-                : 'bg-white text-emerald-700 border border-emerald-200 hover:border-emerald-300 hover:text-emerald-800'
-            }`}
-          >
-            إدارة
-          </button>
-        </div>
+      <div className="flex items-center justify-center rounded-2xl border border-slate-100 bg-slate-50/50 p-1.5 w-fit mx-auto">
+        <button
+          type="button"
+          onClick={() => setMode('overview')}
+          className={`rounded-xl px-6 py-2.5 text-sm font-bold transition-all ${
+            mode === 'overview'
+              ? 'bg-white text-slate-900 shadow-sm ring-1 ring-black/5'
+              : 'text-slate-500 hover:text-slate-700 hover:bg-white/50'
+          }`}
+        >
+          نظرة عامة
+        </button>
+        <button
+          type="button"
+          onClick={() => setMode('manage')}
+          className={`rounded-xl px-6 py-2.5 text-sm font-bold transition-all ${
+            mode === 'manage'
+              ? 'bg-white text-slate-900 shadow-sm ring-1 ring-black/5'
+              : 'text-slate-500 hover:text-slate-700 hover:bg-white/50'
+          }`}
+        >
+          إدارة
+        </button>
       </div>
 
       {mode === 'overview' ? (

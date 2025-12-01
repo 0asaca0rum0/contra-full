@@ -40,9 +40,9 @@ export async function GET(req: NextRequest) {
 
 // POST /api/transactions (PM)
 const TxCreateSchema = z.object({
-  amount: z.number({ invalid_type_error: 'يجب أن يكون رقم' }).positive('يجب أن يكون أكبر من صفر'),
+  amount: z.number({ invalid_type_error: 'يجب أن يكون رقم' }),
   description: z.string().min(1, 'الوصف مطلوب'),
-  projectId: z.string().min(1, 'المشروع مطلوب'),
+  projectId: z.string().optional().nullable(),
   supplierId: z.string().optional().nullable(),
   date: z.string().optional(),
   receiptKey: z.string().optional(),
@@ -56,7 +56,9 @@ export async function POST(req: NextRequest) {
   try { parsed = TxCreateSchema.parse(await req.json()); } catch (e) { return handleZod(req, e); }
   const { amount, description, projectId, supplierId, date, receiptKey } = parsed;
   const userId = auth.userId; // لا نسمح بتمرير userId يدوياً
-  const values: any = { amount, description, projectId, userId, supplierId: supplierId ?? undefined };
+  const values: any = { amount, description, userId, supplierId: supplierId ?? undefined };
+  if (projectId) values.projectId = projectId;
+  
   if (receiptKey) values.receiptUrl = normalizeReceiptStorage(receiptKey);
   if (date) {
     const d = new Date(date);

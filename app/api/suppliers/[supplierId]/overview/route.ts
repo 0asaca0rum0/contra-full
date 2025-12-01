@@ -16,7 +16,8 @@ export async function GET(req: NextRequest) {
     if (!supplier) return NextResponse.json({ error: 'Not found' }, { status: 404 });
 
     const agg = await db.execute(sql`
-      SELECT COALESCE(SUM(amount),0)::double precision AS spent,
+      SELECT COALESCE(SUM(amount),0)::double precision AS balance,
+             COALESCE(SUM(CASE WHEN amount < 0 THEN ABS(amount) ELSE 0 END),0)::double precision AS spent,
              COUNT(*) AS tx_count,
              MAX(created_at) AS last_tx
       FROM transactions
@@ -37,7 +38,7 @@ export async function GET(req: NextRequest) {
       supplier: {
         id: supplier.id,
         name: supplier.name,
-        balance: supplier.balance,
+        balance: Number(row.balance || 0),
         spent: Number(row.spent || 0),
         transactionsCount: Number(row.tx_count || 0),
         lastTransaction: row.last_tx || null,
