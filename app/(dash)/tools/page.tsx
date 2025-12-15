@@ -6,6 +6,7 @@ import AddToolForm from '../../../components/tools/AddToolForm';
 import SectionCard from '@/components/ui/SectionCard';
 import { FaScrewdriverWrench } from 'react-icons/fa6';
 import EditableToolFields from '../../../components/tools/EditableToolFields';
+import ToolHistory from '../../../components/tools/ToolHistory';
 import AccountingExportButton from '@/components/accounting/AccountingExportButton';
 
 export const dynamic = 'force-dynamic';
@@ -87,6 +88,27 @@ export default async function ToolsPage({ searchParams }: { searchParams: Promis
               />
             </div>
           ))}
+        </div>
+      </SectionCard>
+      <SectionCard>
+        <h2 className="mb-4 text-base font-semibold text-slate-700 flex items-center gap-2">
+          <svg className="w-5 h-5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+          </svg>
+          آخر حركات الأدوات
+        </h2>
+        <div className="space-y-4">
+          {list.length > 0 && list.slice(0, 3).map((tool) => (
+            <div key={tool.id} className="border border-slate-200 rounded-lg p-4 bg-slate-50">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="font-semibold text-slate-800">{tool.name}</h3>
+                <ToolHistory toolId={tool.id} />
+              </div>
+            </div>
+          ))}
+          {list.length === 0 && (
+            <div className="text-center text-slate-400 py-8">لا توجد أدوات لعرض حركاتها</div>
+          )}
         </div>
       </SectionCard>
     </div>

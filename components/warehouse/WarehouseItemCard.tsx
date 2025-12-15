@@ -54,14 +54,14 @@ export default function WarehouseItemCard({ id, name, quantity, imageUrl, projec
         <div className="mt-auto flex items-center justify-between gap-2 border-t border-slate-50 pt-3">
            {/* Quick Actions */}
            <div className="flex items-center gap-1 bg-slate-50 p-1 rounded-lg">
-             <button 
+             <button
                onClick={() => openModal('OUT')}
                className="w-8 h-8 flex items-center justify-center rounded-md bg-white border border-slate-200 text-rose-600 hover:bg-rose-50 hover:border-rose-200 hover:text-rose-700 transition-colors shadow-sm"
                title="صرف"
              >
                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M20 12H4" /></svg>
              </button>
-             <button 
+             <button
                onClick={() => openModal('IN')}
                className="w-8 h-8 flex items-center justify-center rounded-md bg-white border border-slate-200 text-emerald-600 hover:bg-emerald-50 hover:border-emerald-200 hover:text-emerald-700 transition-colors shadow-sm"
                title="إضافة"
@@ -69,12 +69,21 @@ export default function WarehouseItemCard({ id, name, quantity, imageUrl, projec
                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" /></svg>
              </button>
            </div>
-
-           {imageUrl && (
-             <a href={imageUrl} target="_blank" rel="noreferrer" className="text-[10px] font-medium text-slate-400 hover:text-emerald-600 transition-colors">
-               عرض الصورة
-             </a>
-           )}
+           
+           <div className="flex items-center gap-2">
+             <button
+               onClick={() => setModalOpen(true)}
+               className="text-[10px] font-medium text-slate-500 hover:text-emerald-600 transition-colors"
+               title="عرض السجل"
+             >
+               السجل
+             </button>
+             {imageUrl && (
+               <a href={imageUrl} target="_blank" rel="noreferrer" className="text-[10px] font-medium text-slate-400 hover:text-emerald-600 transition-colors">
+                 عرض الصورة
+               </a>
+             )}
+           </div>
         </div>
       </article>
 

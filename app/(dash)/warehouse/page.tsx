@@ -4,6 +4,7 @@ import { warehouseItems, projects, projectManagers, users } from '@/drizzle/sche
 import SectionCard from '@/components/ui/SectionCard';
 import AddWarehouseItemForm from '../../../components/warehouse/AddWarehouseItemForm';
 import WarehouseItemCard from '../../../components/warehouse/WarehouseItemCard';
+import TransactionHistory from '../../../components/warehouse/TransactionHistory';
 import { desc, eq } from 'drizzle-orm';
 import AccountingExportButton from '@/components/accounting/AccountingExportButton';
 import { FaBoxesStacked } from 'react-icons/fa6';
@@ -71,6 +72,15 @@ export default async function WarehousePage() {
             ))}
           </div>
         )}
+      </SectionCard>
+      <SectionCard>
+        <h2 className="mb-4 text-base font-semibold text-slate-700 flex items-center gap-2">
+          <svg className="w-5 h-5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+          </svg>
+          سجل حركات المخزن
+        </h2>
+        <TransactionHistory />
       </SectionCard>
     </div>
   );
