@@ -23,17 +23,20 @@ export async function POST(req: NextRequest) {
   const location = (body?.location || '').trim();
   const responsiblePmId = (body?.responsiblePmId || '').trim();
   if (!name || !location) return NextResponse.json({ error: 'name and location required' }, { status: 400 });
-  if (!responsiblePmId) return NextResponse.json({ error: 'responsiblePmId required' }, { status: 400 });
+
   const projectExists = await db.select({ id: projects.id }).from(projects).where(eq(projects.id, location)).limit(1);
   if (projectExists.length === 0) return NextResponse.json({ error: 'project not found' }, { status: 404 });
-  const pmAssignment = await db
-    .select({ ok: sql`1` })
-    .from(projectManagers)
-    .where(and(eq(projectManagers.projectId, location), eq(projectManagers.userId, responsiblePmId)))
-    .limit(1);
-  if (pmAssignment.length === 0) {
-    return NextResponse.json({ error: 'responsible PM must belong to the selected project' }, { status: 400 });
+  
+  if (responsiblePmId) {
+    const pmAssignment = await db
+      .select({ ok: sql`1` })
+      .from(projectManagers)
+      .where(and(eq(projectManagers.projectId, location), eq(projectManagers.userId, responsiblePmId)))
+      .limit(1);
+    if (pmAssignment.length === 0) {
+      return NextResponse.json({ error: 'responsible PM must belong to the selected project' }, { status: 400 });
+    }
   }
-  const [created] = await db.insert(tools).values({ name, location, responsiblePmId }).returning();
+  const [created] = await db.insert(tools).values({ name, location, responsiblePmId: responsiblePmId || null }).returning();
   return NextResponse.json({ tool: created }, { status: 201 });
 }

@@ -87,35 +87,51 @@ export default function AddWarehouseItemForm() {
       setSubmitting(false);
     }
   }
+
   return (
-    <form onSubmit={submit} className="flex flex-wrap items-end gap-3">
-      <div className="flex flex-col gap-1">
-        <label className="text-xs text-slate-600">اسم الصنف</label>
-        <input value={name} onChange={e=>setName(e.target.value)} className="border rounded px-2 py-1 text-sm w-52" placeholder="مثال: مسمار" />
+    <form onSubmit={submit} className="flex flex-col md:flex-row gap-4 items-end bg-slate-50/50 p-4 rounded-xl border border-dashed border-slate-300 hover:border-emerald-400/50 hover:bg-emerald-50/30 transition-all group focus-within:ring-2 focus-within:ring-emerald-500/20 focus-within:border-emerald-500">
+      <div className="flex-1 w-full relative">
+        <label className="text-[11px] uppercase tracking-wider text-slate-400 font-bold mb-1.5 block">اسم الصنف</label>
+        <div className="relative">
+          <input value={name} onChange={e=>setName(e.target.value)} required className="w-full rounded-lg border border-slate-200 pl-4 pr-10 py-2.5 text-sm focus:outline-none focus:border-emerald-500 focus:ring-0 transition-all placeholder:text-slate-300 bg-white font-medium text-slate-700" placeholder="مثال: مسمار" />
+          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
+          </div>
+        </div>
       </div>
-      <div className="flex flex-col gap-1">
-        <label className="text-xs text-slate-600">الكمية الابتدائية</label>
-        <input type="number" value={quantity} onChange={e=>setQuantity(e.target.value)} className="border rounded px-2 py-1 text-sm w-32" />
+      
+      <div className="w-32">
+        <label className="text-[11px] uppercase tracking-wider text-slate-400 font-bold mb-1.5 block">الكمية</label>
+        <input type="number" value={quantity} onChange={e=>setQuantity(e.target.value)} className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm focus:outline-none focus:border-emerald-500 focus:ring-0 transition-all bg-white font-medium text-slate-700 font-mono text-center" />
       </div>
-      <div className="flex flex-col gap-1">
-        <label className="text-xs text-slate-600">صورة (اختياري)</label>
-        <input
-          type="file"
-          accept="image/png,image/jpeg"
-          onChange={(event) => setFile(event.target.files?.[0] ?? null)}
-          className="text-[12px]"
-        />
-        {file && (
-          <span className="text-[11px] text-slate-500" title={file.name}>
-            {file.name} ({Math.round(file.size / 1024)} كيلوبايت)
-          </span>
+
+      <div className="flex-1 w-full relative min-w-[200px]">
+        <label className="text-[11px] uppercase tracking-wider text-slate-400 font-bold mb-1.5 block">صورة (اختياري)</label>
+        <div className="relative">
+            <input
+              type="file"
+              accept="image/png,image/jpeg"
+              onChange={(event) => setFile(event.target.files?.[0] ?? null)}
+              className="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer border border-slate-200 rounded-lg bg-white"
+            />
+        </div>
+         {(file || uploading) && (
+            <div className="absolute top-full left-0 right-0 mt-1 flex justify-between text-[10px]">
+               {file && <span className="text-slate-500 truncate max-w-[150px]">{file.name}</span>}
+               {uploading && <span className="text-emerald-600 font-medium">جاري الرفع...</span>}
+            </div>
+         )}
+      </div>
+
+      <button disabled={submitting} className="h-[42px] px-6 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all text-sm font-bold flex items-center justify-center gap-2 min-w-[100px] disabled:opacity-70 disabled:hover:shadow-sm disabled:hover:translate-y-0 text-nowrap">
+        {submitting ? (
+          <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" className="opacity-25" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>
+        ) : (
+          <>إضافة</>
         )}
-        {uploading && <span className="text-[11px] text-emerald-600">جاري رفع الصورة...</span>}
-      </div>
-      <button disabled={submitting} className="bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white rounded px-4 py-2 text-sm">
-        {submitting ? '...' : 'إضافة'}
       </button>
-      {lastError && <span className="text-[11px] text-rose-600">{lastError}</span>}
+      
+      {lastError && <div className="absolute -bottom-6 right-0 text-xs font-semibold text-red-600 bg-red-50 px-2 py-1 rounded">{lastError}</div>}
     </form>
   );
 }

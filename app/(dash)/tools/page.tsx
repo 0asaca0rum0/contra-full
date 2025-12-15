@@ -73,9 +73,9 @@ export default async function ToolsPage({ searchParams }: { searchParams: Promis
         </div>
         <AddToolForm projects={projectOptions} />
         <div className={`grid gap-6 ${(list.length > 1) ? 'sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4' : 'grid-cols-1'}`}>
-          {list.length === 0 && <div className="text-base text-[var(--color-text-secondary)]">لا توجد أدوات حالياً</div>}
+          {list.length === 0 && <div className="text-base text-slate-400 italic py-10 text-center w-full col-span-full bg-slate-50 rounded-xl border-2 border-dashed border-slate-200">لا توجد أدوات حالياً. قم بإضافة أداة جديدة أعلاه.</div>}
           {list.map(t => (
-            <div key={t.id} className="group relative flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white px-6 pt-5 pb-6 hover:shadow-lg shadow transition-colors overflow-hidden focus:outline-none focus:ring-2 focus:ring-emerald-500/60">
+            <div key={t.id} className="group relative flex flex-col gap-4 rounded-xl border border-slate-200 bg-white px-5 py-5 hover:shadow-xl hover:translate-y-[-2px] hover:border-emerald-200 transition-all duration-300">
               <EditableToolFields
                 id={t.id}
                 nameInitial={t.name}
@@ -85,7 +85,6 @@ export default async function ToolsPage({ searchParams }: { searchParams: Promis
                 responsiblePmName={t.responsiblePmId ? (pmMap.get(t.responsiblePmId) ?? '') : ''}
                 projectOptions={projectOptions}
               />
-              <div className="absolute inset-0 rounded-2xl ring-1 ring-transparent group-hover:ring-emerald-400/40 transition-colors pointer-events-none" />
             </div>
           ))}
         </div>

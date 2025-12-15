@@ -68,6 +68,7 @@ export const warehouseItems = pgTable('warehouse_items', {
   name: text('name').notNull(),
   quantity: integer('quantity').notNull(),
   imageUrl: text('image_url'),
+  price: real('price').notNull().default(0), // Added for spending calculations
   createdAt: timestamp('created_at', { withTimezone: false }).defaultNow().notNull(),
 });
 
@@ -88,6 +89,16 @@ export const tools = pgTable('tools', {
   location: text('location').notNull(),
   responsiblePmId: text('responsible_pm_id').references(() => users.id),
   createdAt: timestamp('created_at', { withTimezone: false }).defaultNow().notNull(),
+});
+
+// Tool Movements (History)
+export const toolMovements = pgTable('tool_movements', {
+  id: text('id').primaryKey().default(sql`gen_random_uuid()`),
+  toolId: text('tool_id').references(() => tools.id),
+  fromLocation: text('from_location'),
+  toLocation: text('to_location'),
+  responsiblePmId: text('responsible_pm_id').references(() => users.id),
+  movedAt: timestamp('moved_at', { withTimezone: false }).defaultNow().notNull(),
 });
 
 // Suppliers
