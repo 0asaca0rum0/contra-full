@@ -1,6 +1,6 @@
 # Contra Project Overview
 
-_Last updated: September 30, 2025_
+_Last updated: December 23, 2025_
 
 ## 1. Mission & Value Proposition
 
@@ -93,6 +93,12 @@ See [`docs/api-overview.md`](./api-overview.md) for a detailed endpoint catalog.
 - `middleware.ts` blocks unauthenticated access to dashboard routes and most APIs.
 - `lib/authz.ts` associates URL patterns with required permissions, evaluating `ALL`, `anyOf`, and `allOf` rules.
 - Data-changing endpoints validate roles: e.g., `POST /api/projects/:projectId/pm-budgets` requires `BUDGET_ADJUST`, warehouse transactions guard against insufficient stock, and destructive actions (delete user/project) perform dependency checks.
+- **File upload security** (Dec 2025 hardening):
+  - Magic bytes validation to verify actual file content
+  - Path traversal protection with multi-layer sanitization
+  - Extension whitelist (PNG, JPEG, PDF only)
+  - Size limits and security headers
+- **Excel exports** use `exceljs` (replaced vulnerable `xlsx` library).
 
 ## 8. Frontend Highlights
 

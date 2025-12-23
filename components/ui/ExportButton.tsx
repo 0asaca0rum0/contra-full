@@ -1,7 +1,7 @@
 "use client";
 import { useState } from 'react';
 import { Button } from './button';
-import * as XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
 
 type Props<T extends Record<string, any>> = {
   filename?: string;
@@ -12,20 +12,37 @@ type Props<T extends Record<string, any>> = {
   size?: any;
 };
 
-// XLSX export (single sheet). Falls back to JSON blob if XLSX fails.
+// ExcelJS export (single sheet). Falls back to JSON blob if export fails.
 export default function ExportButton<T extends Record<string, any>>({ filename = 'export', data, transform, text = 'تصدير Excel', variant, size }: Props<T>) {
   const [busy, setBusy] = useState(false);
 
-  const handle = () => {
+  const handle = async () => {
     if (!data || data.length === 0) return;
     setBusy(true);
     try {
       const rows = transform ? data.map(r => transform(r)) : data;
-      const ws = XLSX.utils.json_to_sheet(rows);
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-      const out = XLSX.write(wb, { type: 'array', bookType: 'xlsx' });
-      const blob = new Blob([out], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      
+      // Create workbook and worksheet
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet('Sheet1');
+      
+      // Add headers from first row keys
+      if (rows.length > 0) {
+        const headers = Object.keys(rows[0]);
+        worksheet.addRow(headers);
+        
+        // Style header row
+        worksheet.getRow(1).font = { bold: true };
+        
+        // Add data rows
+        for (const row of rows) {
+          worksheet.addRow(headers.map(h => row[h]));
+        }
+      }
+      
+      // Generate buffer and download
+      const buffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -35,6 +52,7 @@ export default function ExportButton<T extends Record<string, any>>({ filename =
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
     } catch (e) {
+      // Fallback to JSON export
       try {
         const rows = transform ? data.map(r => transform(r)) : data;
         const blob = new Blob([JSON.stringify(rows, null, 2)], { type: 'application/json' });

@@ -1,6 +1,6 @@
 # Contra API Reference
 
-_Last updated: September 30, 2025_
+_Last updated: December 23, 2025_
 
 ## 1. Overview
 
@@ -38,8 +38,13 @@ Next.js 15 ➜ `/app/api/*` route handlers
 ### File Storage & Receipts
 
 - `POST /api/receipts/presign`: plans a local upload path, returning `{ key, uploadUrl, formField, publicUrl }`.
-- `POST /api/files/upload?key=...`: accepts `multipart/form-data` in Node.js runtime, enforces type (`png`, `jpeg`, `pdf`) and size (≤10 MB).
-- `GET /api/files/[...key]`: streams stored files with best-effort content-type detection.
+- `POST /api/files/upload?key=...`: accepts `multipart/form-data` in Node.js runtime with multiple security layers:
+  - **Magic bytes validation**: verifies actual file content matches claimed MIME type (prevents fake file uploads)
+  - **Extension whitelist**: only allows `png`, `jpg`, `jpeg`, `pdf`
+  - **Path traversal protection**: sanitizes paths, blocks `..` segments and null bytes
+  - **Size limit**: 10 MB maximum
+  - **Security headers**: `X-Content-Type-Options: nosniff`
+- `GET /api/files/[...key]`: serves stored files with security headers (`X-Content-Type-Options`, `Content-Security-Policy`).
 - `lib/receipts` ensures stored keys are normalized and public URLs remain under `/api/files/`.
 
 ## 2. Domain Modules & Endpoints
@@ -196,7 +201,13 @@ Schema definitions live in `drizzle/schema.ts`. Key tables include:
 
 - Session cookie is httpOnly and limited to 7 days in the current implementation.
 - Middleware blocks unauthenticated API access except for explicitly public endpoints.
-- File upload endpoints sanitize paths and extensions, enforce size/type limits, and guard against directory traversal.
+- **File upload security** (as of Dec 2025):
+  - Magic bytes validation prevents uploading malicious files disguised as images/PDFs
+  - Path traversal protection with multiple layers (segment sanitization + resolved path verification)
+  - Extension whitelist (`png`, `jpg`, `jpeg`, `pdf` only)
+  - Size limits (10 MB)
+  - Security headers on responses (`X-Content-Type-Options: nosniff`, `Content-Security-Policy`)
+- **Excel export** uses `exceljs` library (replaced vulnerable `xlsx` package).
 
 ### Pagination & Limits
 

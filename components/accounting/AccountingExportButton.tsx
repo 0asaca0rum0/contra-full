@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import * as XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
 
 type EndpointConfig = {
   url: string;            // API endpoint (relative)
@@ -95,14 +95,43 @@ export default function AccountingExportButton({ endpoints = [], sheets = [], fi
         alert('لا توجد بيانات للتصدير');
         return;
       }
-      const wb = XLSX.utils.book_new();
+      
+      // Create workbook with ExcelJS
+      const workbook = new ExcelJS.Workbook();
+      
       for (const s of all) {
         const localized = localizeRows(s.rows);
-        const ws = XLSX.utils.json_to_sheet(localized);
-        XLSX.utils.book_append_sheet(wb, ws, sanitizeSheetName(s.sheet));
+        const sheetName = sanitizeSheetName(s.sheet);
+        const worksheet = workbook.addWorksheet(sheetName);
+        
+        if (localized.length > 0) {
+          // Add headers
+          const headers = Object.keys(localized[0]);
+          worksheet.addRow(headers);
+          
+          // Style header row
+          worksheet.getRow(1).font = { bold: true };
+          worksheet.getRow(1).fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: 'FFE0E0E0' }
+          };
+          
+          // Add data rows
+          for (const row of localized) {
+            worksheet.addRow(headers.map(h => row[h]));
+          }
+          
+          // Auto-fit columns (approximate)
+          worksheet.columns.forEach(col => {
+            col.width = 15;
+          });
+        }
       }
-      const out = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-      const blob = new Blob([out], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      
+      // Generate buffer and download
+      const buffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
       a.download = filename.replace(/\.[a-z]+$/i,'') + '.xlsx';
@@ -123,5 +152,5 @@ export default function AccountingExportButton({ endpoints = [], sheets = [], fi
 }
 
 function sanitizeSheetName(name: string): string {
-  return name.replace(/[\\\/*?:\[\]]/g, '_').slice(0, 28) || 'Sheet';
+  return name.replace(/[\\/*?:\[\]]/g, '_').slice(0, 28) || 'Sheet';
 }
