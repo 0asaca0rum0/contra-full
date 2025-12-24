@@ -119,12 +119,12 @@ export default function Navbar() {
               {menuOpen ? <FiX size={20} /> : <FiMenu size={20} />}
             </button>
             <Link href="/dashboard" className="flex items-center gap-3 text-white">
-              <span className="relative inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-300/90 to-emerald-600/90 text-slate-900 shadow ring-1 ring-white/40">
-                <span className="text-[10px] font-black tracking-[0.35em]">CON</span>
+              <span className="relative inline-flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 text-white shadow-md ring-1 ring-white/20">
+                <span className="text-lg font-bold">C</span>
               </span>
               <span className="hidden flex-col leading-tight sm:flex">
-                <span className="text-sm font-semibold text-white/90">كونترا</span>
-                <span className="text-[11px] text-emerald-100/80">لوحة إدارة المشاريع</span>
+                <span className="text-base font-bold text-white">Contrx</span>
+                <span className="text-[10px] text-emerald-200/80">إدارة المشاريع</span>
               </span>
             </Link>
           </div>

@@ -1,5 +1,8 @@
 export const metadata = { title: 'المشاريع' };
 import { getBaseUrl } from '@/lib/baseUrl';
+import ProjectsManager from '@/components/projects/ProjectsManager';
+import ProjectCard from '@/components/projects/ProjectCard';
+import AccountingExportButton from '@/components/accounting/AccountingExportButton';
 
 async function getProjects() {
   const base = await getBaseUrl();
@@ -9,37 +12,49 @@ async function getProjects() {
   return res.json();
 }
 
-import ProjectsManager from '@/components/projects/ProjectsManager';
-import { Suspense } from 'react';
-import Link from 'next/link';
-import AccountingExportButton from '@/components/accounting/AccountingExportButton';
-
 export default async function Page() {
-  let data: any = { projects: [] };
+  let data: { projects: Array<{ id: string; name: string; totalBudget?: number }> } = { projects: [] };
   try {
     data = await getProjects();
-  } catch (e) {}
-  const exportRows = (data.projects || []).map((p: any)=>({ id: p.id, name: p.name, totalBudget: p.totalBudget }));
+  } catch {}
+  
+  const exportRows = (data.projects || []).map((p) => ({ 
+    id: p.id, 
+    name: p.name, 
+    totalBudget: p.totalBudget 
+  }));
+
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
+      {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-4">
-        <h1 className="text-2xl section-title">المشاريع</h1>
-        <AccountingExportButton filename="تقرير_المشاريع" text="تصدير" sheets={[{ sheet: 'المشاريع', rows: exportRows }]} />
+        <div>
+          <h1 className="text-2xl font-bold text-white">المشاريع</h1>
+          <p className="text-sm text-slate-400 mt-1">إدارة وعرض جميع المشاريع</p>
+        </div>
+        <AccountingExportButton 
+          filename="تقرير_المشاريع" 
+          text="تصدير" 
+          sheets={[{ sheet: 'المشاريع', rows: exportRows }]} 
+        />
       </div>
+
+      {/* Add Project Form */}
       <ProjectsManager initial={data.projects || []} />
-      <ul className="grid sm:grid-cols-2 gap-3">
-        {(data.projects || []).map((p: any) => (
-          <li key={p.id}>
-            <Link href={`/projects/${p.id}`} className="group block rounded-[16px] border border-[var(--glass-border)] bg-[var(--glass-bg)] backdrop-blur-xl p-5 hover:shadow-md transition-all focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]">
-              <div className="font-semibold mb-1 text-[1.05em] flex items-center gap-2">
-                <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 group-hover:scale-125 transition-transform" />
-                {p.name}
-              </div>
-              <div className="text-xs text-[var(--color-text-secondary)]"># {p.id.slice(0,8)}</div>
-            </Link>
-          </li>
-        ))}
-      </ul>
+
+      {/* Projects Grid */}
+      {data.projects.length === 0 ? (
+        <div className="text-center py-12 rounded-2xl border border-dashed border-slate-700 bg-slate-900/50">
+          <p className="text-slate-400">لا توجد مشاريع حالياً</p>
+          <p className="text-sm text-slate-500 mt-1">أضف مشروعاً جديداً للبدء</p>
+        </div>
+      ) : (
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {data.projects.map((project) => (
+            <ProjectCard key={project.id} project={project} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
