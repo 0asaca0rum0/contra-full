@@ -4,10 +4,20 @@ import ProjectsManager from '@/components/projects/ProjectsManager';
 import ProjectCard from '@/components/projects/ProjectCard';
 import AccountingExportButton from '@/components/accounting/AccountingExportButton';
 
+import { cookies } from 'next/headers';
+
 async function getProjects() {
   const base = await getBaseUrl();
+  const ck = await cookies();
+  const cookieHeader = ck.getAll().map(c => `${c.name}=${c.value}`).join('; ');
+  
   const url = `${base}/api/projects`;
-  const res = await fetch(url, { cache: 'no-store' });
+  const res = await fetch(url, { 
+    cache: 'no-store',
+    headers: {
+      ...(cookieHeader ? { cookie: cookieHeader } : {})
+    }
+  });
   if (!res.ok) throw new Error(`Failed to fetch projects: ${res.status}`);
   return res.json();
 }
