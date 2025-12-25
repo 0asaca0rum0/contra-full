@@ -5,16 +5,30 @@ import { PropsWithChildren } from 'react';
 interface SectionCardProps extends PropsWithChildren {
   className?: string;
   delay?: number;
+  variant?: 'light' | 'dark' | 'glass';
 }
 
-export default function SectionCard({ children, className = '', delay = 0 }: SectionCardProps) {
+export default function SectionCard({ 
+  children, 
+  className = '', 
+  delay = 0,
+  variant = 'light'
+}: SectionCardProps) {
+  
+  const variants = {
+    light: 'bg-white border-slate-200 text-slate-900 shadow-sm',
+    dark: 'bg-[#1a1c1e] border-white/10 text-white shadow-2xl',
+    glass: 'bg-emerald-500/5 border-emerald-500/20 text-slate-900 shadow-sm'
+  };
+
   return (
     <motion.section
       initial={{ y: 12, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.4, ease: 'easeOut', delay }}
       className={[
-        'rounded-xl p-5 md:p-6 ui-glass ui-hover-card border-emerald-100 shadow-sm',
+        'rounded-[2rem] p-6 border transition-all duration-300',
+        variants[variant],
         className,
       ].join(' ')}
     >

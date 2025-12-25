@@ -4,9 +4,9 @@ import { useRouter } from 'next/navigation';
 
 interface Employee { id: string; name: string; }
 interface AttendanceRec { employee_id: string; present?: boolean; status?: string; state?: string; }
-interface Props { employees: Employee[]; attendance?: AttendanceRec[]; }
+interface Props { employees: Employee[]; attendance?: AttendanceRec[]; date?: string; }
 
-export default function AttendanceControls({ employees, attendance }: Props) {
+export default function AttendanceControls({ employees, attendance, date }: Props) {
   const router = useRouter();
   const [pendingId, setPendingId] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -34,7 +34,7 @@ export default function AttendanceControls({ employees, attendance }: Props) {
       const res = await fetch('/api/attendance', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ employeeId: empId, present })
+  body: JSON.stringify({ employeeId: empId, present, date })
       });
       if (!res.ok) {
         const j = await res.json().catch(()=>({}));
@@ -51,12 +51,12 @@ export default function AttendanceControls({ employees, attendance }: Props) {
   return (
     <div className="mt-4 space-y-3">
       <h3 className="font-medium text-sm flex items-center gap-3">
-        <span>تحديث الحضور (اليوم)</span>
+        <span>تحديث الحضور ({date ? new Date(date).toLocaleDateString('ar') : 'اليوم'})</span>
         {summary.total > 0 && (
-          <span className="text-[10px] text-slate-600 flex items-center gap-2">
-            <span className="px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700 border border-emerald-300">حاضر: {summary.present}</span>
-            <span className="px-1.5 py-0.5 rounded bg-rose-100 text-rose-700 border border-rose-300">غائب: {summary.absent}</span>
-            <span className="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-300">الإجمالي: {summary.total}</span>
+          <span className="text-[10px] font-bold flex items-center gap-2">
+            <span className="px-2 py-1 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">حاضر: {summary.present}</span>
+            <span className="px-2 py-1 rounded-lg bg-rose-500/10 text-rose-400 border border-rose-500/20">غائب: {summary.absent}</span>
+            <span className="px-2 py-1 rounded-lg bg-slate-700/50 text-slate-300 border border-white/5">الإجمالي: {summary.total}</span>
           </span>
         )}
       </h3>
@@ -68,11 +68,11 @@ export default function AttendanceControls({ employees, attendance }: Props) {
           const already = !!rec;
           const present = rec?.present ?? (rec?.status === 'present' || rec?.state === 'present');
           return (
-            <li key={e.id} className="flex items-center justify-between gap-2 text-xs rounded px-2 py-1 border ui-glass ui-hover-card">
-              <span className="font-medium text-slate-700 truncate flex items-center gap-2">
+            <li key={e.id} className="flex items-center justify-between gap-2 text-sm rounded-2xl px-4 py-3 border border-white/5 bg-slate-800/40 hover:bg-slate-800/60 transition-colors">
+              <span className="font-bold text-white truncate flex items-center gap-3">
                 {e.name}
                 {already && (
-                  <span className={`px-1.5 py-0.5 rounded text-[10px] font-semibold tracking-wide ${present ? 'bg-emerald-100 text-emerald-700 border border-emerald-300' : 'bg-rose-100 text-rose-700 border border-rose-300'}`}>
+                  <span className={`px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest ${present ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-rose-500/20 text-rose-400 border border-rose-500/30'}`}>
                     {present ? 'حاضر' : 'غائب'}
                   </span>
                 )}

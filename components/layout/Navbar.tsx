@@ -16,6 +16,7 @@ import {
   FiFileText,
   FiArchive,
   FiShield,
+  FiCalendar,
 } from 'react-icons/fi';
 import { FaUserCircle } from 'react-icons/fa';
 
@@ -57,6 +58,7 @@ export default function Navbar() {
   const links = [
     { href: '/dashboard', label: 'الرئيسية', Icon: FiHome },
     { href: '/projects', label: 'المشاريع', Icon: FiFolder },
+    { href: '/attendance', label: 'الحضور', Icon: FiCalendar },
     { href: '/pm', label: 'مديرو المشاريع', Icon: FiUsers },
     { href: '/suppliers', label: 'الموردون', Icon: FiTruck },
     { href: '/tools', label: 'الأدوات', Icon: FiTool },

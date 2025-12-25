@@ -26,8 +26,9 @@ export async function POST(req: NextRequest) {
   const userExists = await db.select({ id: users.id }).from(users).where(eq(users.id, markedById)).limit(1);
   if (!userExists[0]) return NextResponse.json({ error: 'invalid user' }, { status: 401 });
 
-  // Use current date (truncate to day)
-  const now = new Date();
+  // Use current date or provided date (truncate to day)
+  const dateStr = body?.date;
+  const now = dateStr ? new Date(dateStr) : new Date();
   const start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const end = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
 

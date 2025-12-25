@@ -43,12 +43,12 @@ export default async function Page() {
   return (
     <div className="space-y-8 pb-20">
       {/* Header */}
-      <div className="flex items-center justify-between flex-wrap gap-4">
+      <div className="flex items-center justify-between flex-wrap gap-6">
         <div>
-          <h1 className="text-3xl font-black text-white tracking-tight">المشاريع</h1>
-          <p className="text-sm text-white/40 mt-1">إدارة ومتابعة كافة مشاريع "كونترا"</p>
+          <h1 className="text-4xl font-black text-slate-900 tracking-tighter">المشاريع</h1>
+          <p className="text-sm font-bold text-emerald-600 uppercase tracking-widest mt-1">إدارة ومتابعة كافة مشاريع "كونترا"</p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
           <AccountingExportButton 
             filename="تقرير_المشاريع" 
             text="تصدير البيانات" 
@@ -57,7 +57,7 @@ export default async function Page() {
         </div>
       </div>
 
-      <div className="grid gap-8">
+      <div className="grid gap-10">
         {/* Add Project Section */}
         <section className="relative z-20">
           <ProjectsManager />
@@ -66,13 +66,13 @@ export default async function Page() {
         {/* Projects Grid / Empty State */}
         <section className="relative z-10">
           {projects.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-24 px-6 rounded-[2.5rem] bg-[#1a1c1e] border border-white/10 text-center shadow-xl">
-              <div className="w-20 h-20 rounded-2xl bg-emerald-500/10 flex items-center justify-center mb-8 border border-emerald-500/20">
-                <FiFolder className="w-10 h-10 text-emerald-400" />
+            <div className="flex flex-col items-center justify-center py-24 px-6 rounded-[2.5rem] bg-white border border-slate-200 text-center shadow-lg">
+              <div className="w-20 h-20 rounded-3xl bg-emerald-50 flex items-center justify-center mb-8 border border-emerald-100 shadow-sm">
+                <FiFolder className="w-10 h-10 text-emerald-600" />
               </div>
               
-              <h3 className="text-3xl font-bold text-white mb-4 tracking-tight">لا توجد مشاريع مضافة بعد</h3>
-              <p className="text-slate-300 max-w-sm mb-10 leading-relaxed text-base">
+              <h3 className="text-3xl font-black text-slate-900 mb-4 tracking-tight">لا توجد مشاريع مضافة بعد</h3>
+              <p className="text-slate-500 max-w-sm mb-10 leading-relaxed text-base font-medium">
                 ابدأ بإضافة أول مشروع لك لتتمكن من إدارة الميزانيات، الموظفين، والمصروفات بكل سهولة.
               </p>
             </div>
