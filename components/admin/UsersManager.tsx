@@ -172,15 +172,16 @@ export default function UsersManager() {
               <thead>
                 <tr className="text-[var(--color-text-secondary)]">
                   <th className="text-right py-2">اسم المستخدم</th>
+                  <th className="text-right py-2">كلمة المرور</th>
                   <th className="text-right py-2">الدور</th>
                   <th className="text-right py-2">إجراءات</th>
                 </tr>
               </thead>
               <tbody>
                 {loading ? (
-                  <tr><td className="py-4" colSpan={3}>جارٍ التحميل…</td></tr>
+                  <tr><td className="py-4" colSpan={4}>جارٍ التحميل…</td></tr>
                 ) : users.length === 0 ? (
-                  <tr><td className="py-4" colSpan={3}>لا يوجد مستخدمون</td></tr>
+                  <tr><td className="py-4" colSpan={4}>لا يوجد مستخدمون</td></tr>
                 ) : (
                   users.map((u) => (
                     <tr key={u.id} className="border-t border-[var(--glass-border)]">
@@ -189,6 +190,18 @@ export default function UsersManager() {
                           <Input value={form.username} onChange={(e) => setForm((f) => ({ ...f, username: e.target.value }))} />
                         ) : (
                           u.username
+                        )}
+                      </td>
+                      <td className="py-3">
+                        {editingId === u.id ? (
+                          <Input
+                            type="password"
+                            value={form.password}
+                            onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))}
+                            placeholder="اتركه فارغاً لعدم التغيير"
+                          />
+                        ) : (
+                          <span className="text-slate-400">••••••••</span>
                         )}
                       </td>
                       <td className="py-3">

@@ -5,8 +5,10 @@ import { ar } from 'date-fns/locale';
 
 interface ToolHistoryItem {
   id: string;
-  fromLocation: string;
-  toLocation: string;
+  fromLocationId: string | null;
+  fromLocationName: string | null;
+  toLocationId: string | null;
+  toLocationName: string | null;
   responsiblePmName: string;
   movedAt: string;
 }
@@ -25,7 +27,7 @@ export default function ToolHistory({ toolId }: { toolId: string }) {
           setHistory(data.data.history);
         }
       })
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => setLoading(false));
   }, [toolId]);
 
@@ -41,13 +43,14 @@ export default function ToolHistory({ toolId }: { toolId: string }) {
             {format(new Date(item.movedAt), 'd MMMM yyyy - HH:mm', { locale: ar })}
           </time>
           <h3 className="text-sm font-semibold text-slate-900">
-            تم النقل إلى <span className="text-emerald-700">{item.toLocation || 'صندوق العدة'}</span>
+            تم النقل إلى <span className="text-emerald-700">{item.toLocationName || item.toLocationId || 'غير محدد'}</span>
           </h3>
           <p className="mb-2 text-xs font-normal text-slate-500">
-            من: {item.fromLocation || 'غير محدد'} | المسؤول: {item.responsiblePmName || 'غير معروف'}
+            من: {item.fromLocationName || item.fromLocationId || 'غير محدد'} | المسؤول: {item.responsiblePmName || 'غير معروف'}
           </p>
         </div>
       ))}
     </div>
   );
+
 }

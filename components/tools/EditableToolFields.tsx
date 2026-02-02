@@ -57,7 +57,8 @@ export default function EditableToolFields({ id, nameInitial, locationInitial, p
     }
   }, [currentProjectManagers, responsiblePmId]);
 
-  const resolvedLocationLabel = projectMap.get(locationInitial) ?? locationLabel ?? locationInitial;
+  const resolvedLocationLabel = projectMap.get(location) ?? locationLabel ?? location;
+
   const displayLocation = resolvedLocationLabel ? resolvedLocationLabel : '—';
   const displayResponsiblePm = responsiblePmId
     ? (pmMap.get(responsiblePmId) ?? responsiblePmName ?? responsiblePmId)
@@ -84,7 +85,7 @@ export default function EditableToolFields({ id, nameInitial, locationInitial, p
     try {
       const res = await fetch(`/api/tools/${id}`, { method: 'PATCH', body: JSON.stringify({ name, location, responsiblePmId }), headers: { 'content-type': 'application/json' } });
       if (!res.ok) {
-        const j = await res.json().catch(()=>({}));
+        const j = await res.json().catch(() => ({}));
         setError(j.error || 'فشل الحفظ');
         return;
       }
@@ -106,7 +107,7 @@ export default function EditableToolFields({ id, nameInitial, locationInitial, p
     try {
       const res = await fetch(`/api/tools/${id}`, { method: 'DELETE' });
       if (!res.ok) {
-        const j = await res.json().catch(()=>({}));
+        const j = await res.json().catch(() => ({}));
         setError(j.error || 'فشل الحذف');
         return;
       }
@@ -121,7 +122,7 @@ export default function EditableToolFields({ id, nameInitial, locationInitial, p
       <div className="flex flex-col h-full relative z-10">
         <div className="flex items-start justify-between gap-3 mb-4">
           <div className="p-2 rounded-lg bg-emerald-50 text-emerald-600">
-             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z" /></svg>
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z" /></svg>
           </div>
           <div className="flex items-center gap-2">
             <ToolHistory toolId={id} />
@@ -130,7 +131,7 @@ export default function EditableToolFields({ id, nameInitial, locationInitial, p
             </button>
           </div>
         </div>
-        
+
         <h2 className="text-lg font-bold text-slate-800 tracking-tight mb-1">{name}</h2>
         <div className="space-y-2 mt-auto pt-4">
           <div className="flex items-center gap-2 text-sm text-slate-600 bg-slate-50 px-3 py-2 rounded-md border border-slate-100">
@@ -152,17 +153,17 @@ export default function EditableToolFields({ id, nameInitial, locationInitial, p
     <div className="flex flex-col gap-3 w-full h-full relative z-10">
       <div className="mb-2">
         <label className="text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-1 block">اسم الأداة</label>
-        <input value={name} onChange={e=>setName(e.target.value)} placeholder="اسم الأداة" className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-semibold text-slate-800 placeholder:text-slate-300" />
+        <input value={name} onChange={e => setName(e.target.value)} placeholder="اسم الأداة" className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-semibold text-slate-800 placeholder:text-slate-300" />
       </div>
 
       <div className="space-y-3">
         <div>
-           <label className="text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-1 block">المشروع</label>
-           {hasProjects ? (
+          <label className="text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-1 block">المشروع</label>
+          {hasProjects ? (
             <div className="relative">
               <select
                 value={location}
-                onChange={e=>setLocation(e.target.value)}
+                onChange={e => setLocation(e.target.value)}
                 className="w-full appearance-none rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 bg-white transition-all text-slate-700 cursor-pointer"
               >
                 <option value="">اختر مشروعاً</option>
@@ -185,11 +186,11 @@ export default function EditableToolFields({ id, nameInitial, locationInitial, p
         </div>
 
         <div>
-           <label className="text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-1 block">المسؤول</label>
-           <div className="relative">
+          <label className="text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-1 block">المسؤول</label>
+          <div className="relative">
             <select
               value={responsiblePmId}
-              onChange={e=>setResponsiblePmId(e.target.value)}
+              onChange={e => setResponsiblePmId(e.target.value)}
               disabled={!hasManagers}
               className="w-full appearance-none rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 bg-white disabled:bg-slate-50 disabled:text-slate-400 transition-all text-slate-700 cursor-pointer"
             >
@@ -198,15 +199,15 @@ export default function EditableToolFields({ id, nameInitial, locationInitial, p
                 <option key={pm.id} value={pm.id}>{pm.name}</option>
               ))}
             </select>
-             <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
-              </div>
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+            </div>
           </div>
         </div>
       </div>
 
       {error && <div className="text-[11px] text-red-600 bg-red-50 p-2 rounded font-medium">{error}</div>}
-      
+
       <div className="flex gap-2 mt-4 pt-4 border-t border-slate-100">
         <button onClick={save} disabled={saving} className="flex-1 text-[13px] px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-medium shadow-sm hover:shadow transition-all disabled:opacity-50 disabled:shadow-none">{saving ? 'جاري الحفظ...' : 'حفظ التعديلات'}</button>
         <button onClick={cancel} disabled={saving} className="text-[13px] px-3 py-2 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-medium transition-colors">إلغاء</button>
