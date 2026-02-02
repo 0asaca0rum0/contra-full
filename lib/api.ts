@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { randomUUID } from 'crypto';
-// @ts-ignore - module will be installed (zod)
 import { ZodError } from 'zod';
 
 export type ApiSuccess<T> = { success: true; requestId: string; data: T };
@@ -42,6 +41,6 @@ export function handleZod(req: NextRequest, e: unknown) {
 
 // Simple logger abstraction
 export const logger = {
-  info(meta: any, msg?: string) { try { console.log('[INFO]', msg || '', meta); } catch {} },
-  error(meta: any, msg?: string) { try { console.error('[ERROR]', msg || '', meta); } catch {} },
+  info(meta: any, msg?: string) { try { console.log('[INFO]', msg || '', meta); } catch { } },
+  error(meta: any, msg?: string) { try { console.error('[ERROR]', msg || '', meta); } catch { } },
 };
