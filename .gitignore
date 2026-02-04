@@ -42,3 +42,6 @@ next-env.d.ts
 #docker compose
 .dockerignore  
 docker-compose.yml
+#agents files
+agent.md
+.agent

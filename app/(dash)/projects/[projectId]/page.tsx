@@ -4,6 +4,7 @@ import ProjectExpenseForm from "../../../../components/projects/ProjectExpenseFo
 import AllocationForm from "@/components/projects/AllocationForm";
 import SectionCard from "@/components/ui/SectionCard";
 import Identicon from "@/components/ui/Identicon";
+import DeleteProjectButton from "@/components/projects/DeleteProjectButton";
 import {
 	FaMoneyBillTrendUp,
 	FaUsersGear,
@@ -156,6 +157,7 @@ export default async function Page({ params }: { params: any }) {
 					<p className="text-sm font-bold text-emerald-600 uppercase tracking-widest">معرّف: {project.id}</p>
 				</div>
 				<div className="flex items-center gap-3">
+					<DeleteProjectButton projectId={projectId} projectName={project.name} />
 					<AccountingExportButton
 						filename={`تقرير_المشروع_${project.id}`}
 						text="تصدير"
